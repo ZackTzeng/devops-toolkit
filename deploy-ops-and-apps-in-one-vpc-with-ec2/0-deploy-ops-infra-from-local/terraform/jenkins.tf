@@ -136,8 +136,20 @@ resource "aws_lb_target_group_attachment" "jenkins_attachment" {
 
 # Route 53
 data "aws_route53_zone" "jenkins_selected" {
-  name         = var.domain_name
+  name         = var.hosted_zone
   private_zone = false
+}
+
+resource "aws_route53_record" "jenkins" {
+  zone_id = data.aws_route53_zone.jenkins_selected.zone_id
+  name    = "${var.project_name}-${var.jenkins_name}.${var.hosted_zone}"
+  type    = "A"
+
+  alias {
+    name                   = aws_lb.jenkins_alb.dns_name
+    zone_id                = aws_lb.jenkins_alb.zone_id
+    evaluate_target_health = true
+  }
 }
 
 resource "aws_route53_record" "jenkins_cert_validation" {
@@ -158,7 +170,7 @@ resource "aws_route53_record" "jenkins_cert_validation" {
 
 # ACM Certificate
 resource "aws_acm_certificate" "jenkins_cert" {
-  domain_name       = "${var.project_name}-${var.jenkins_name}.${var.domain_name}"
+  domain_name       = "${var.project_name}-${var.jenkins_name}.${var.hosted_zone}"
   
   validation_method = "DNS"
 

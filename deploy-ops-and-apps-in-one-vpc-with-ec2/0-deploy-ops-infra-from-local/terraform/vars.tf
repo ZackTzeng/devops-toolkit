@@ -5,9 +5,9 @@ variable "aws_region" {
 }
 
 variable "project_name" {
-  description = "The name of the project"
+  description = "The name of the project within this VPC"
   type        = string
-  default     = "project-name"
+  # default     = "awesome-project"
 }
 
 variable "vpc_cidr" {
@@ -54,7 +54,7 @@ variable "prometheus_ami_id" {
   default     = "ami-04b70fa74e45c3917"
 }
 
-variable "domain_name" {
+variable "hosted_zone" {
   description = "The domain name for Route 53 and ACM"
   type        = string
   default     = "fitastic.io"
